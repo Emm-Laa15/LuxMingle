@@ -24,18 +24,16 @@ const io = socketIO(server);
 
 app.use(express.static('public'));  // Serve your HTML, CSS, JS files
 
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
   console.log('a user connected');
 
   // Send existing messages to the client
-  socket.on('connection', async () => {
-    try {
-      const messages = await Message.find().sort({ timestamp: -1 }).limit(50).exec();
-      socket.emit('init', messages);
-    } catch(err) {
-      console.error(err);
-    }
-  });
+  try {
+    const messages = await Message.find().sort({ timestamp: -1 }).limit(50).exec();
+    socket.emit('init', messages);
+  } catch(err) {
+    console.error(err);
+  }
 
   // Handle message event
   socket.on('message', async (messageContent) => {
